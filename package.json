@@ -1,0 +1,28 @@
+{
+  "name": "slack-mention-notifier",
+  "version": "0.0.1",
+  "license": "MIT",
+  "devDependencies": {
+    "gh-pages": "^1.1.0",
+    "prettier": "^1.13.0",
+    "react-scripts": "^1.0.17"
+  },
+  "dependencies": {
+    "ajax-request": "^1.2.3",
+    "clipboard": "^1.7.1",
+    "firebase": "^5.8.6",
+    "github-fork-ribbon-css": "^0.2.1",
+    "react": "^16.2.0",
+    "react-awesome-modal": "^2.0.5",
+    "react-balloon": "^0.2.5",
+    "react-dom": "^16.2.0",
+    "react-toastify": "^4.5.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "deploy": "gh-pages -d build"
+  }
+}
