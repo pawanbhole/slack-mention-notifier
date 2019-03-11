@@ -3,6 +3,10 @@ import RegisterPopup from './RegisterPopup';
 import NotificationsHandler from './notification/NotificationsHandler';
 import RegisterAPI from './api/RegisterAPI';
 
+
+/* 
+ * Class to initialize widget and all other components.
+ */
 class App extends PureComponent {
   constructor(props) {
     super(props);

@@ -15,6 +15,9 @@ const STEPS = {
 }
 
 
+/* 
+ * Class to that shows the notification badge on top right, notifications and notification registration popup.
+ */
 export default class RegisterPopup extends Component {
     constructor(props) {
         super(props);
@@ -32,10 +35,16 @@ export default class RegisterPopup extends Component {
         this.notificationsHandler.addTokenStatusListener(this.handleTokenSentToServer);
     }
 
+    /* 
+     * notificationsHandler is initialized after mount so that the registered listeners will be executed.
+     */
     componentDidMount() {
         this.notificationsHandler.init();
     }
 
+    /* 
+     * Initial state.
+     */
     getEmptyState() {
         return {
             visible : false,
@@ -49,89 +58,108 @@ export default class RegisterPopup extends Component {
         };
     }
 
+    /* 
+     * to set popup visible.
+     */
     openModal() {
         this.setState({
             visible : true
         });
     }
 
+    /* 
+     * to set popup hidden.
+     */
     hideModal() {
         this.setState({
             visible : false
         });
     }
 
+    /* 
+     * to reset widget state. it also close the popup
+     */
     closeModal() {
         this.setState(this.getEmptyState());
     }
 
+    /* 
+     * to close the popup and mark flow as complete.
+     */
     closeModalAndCompleteFlow() {
         this.setState({visible : false, currentStep: STEPS.ALREADY_SUBSCRIBED});
     }
 
+
+    /* 
+     * listener for userId change
+     */
     handleUserIdChange(event) {
         event.preventDefault();
         this.setState({userId: event.target.value});
     }
 
+    /* 
+     * listener for email change
+     */
     handleEmailChange(event) {
         event.preventDefault();
         this.setState({email: event.target.value});
     }
 
+    /* 
+     * it calls the authenticate API. If successful then change state to show validate pin form
+     */
     handleAuthenticate(event) {
         event.preventDefault();
-        console.log(this.state.email);
         this.api.authenticate(this.state.userId, this.state.email).then((response) => {
-            console.log("response--")
-            console.log(response)
             if(response.success) {
                 this.setState({currentStep: STEPS.VALIDATE_PIN, message: ''});
             } else {
                 this.setState({message: response.message});
             }
         }).catch((error) => {
-            console.log("error--")
-            console.log(error)
+            console.log("error", error);
             this.setState({message: error.message});
         });
     }
 
+    /* 
+     * listener for secretCode change
+     */
     handleSecretCodeChange(event) {
         event.preventDefault();
         this.setState({secretCode: event.target.value});
     }
 
+    /* 
+     * it calls the validate secret code API. If successful then change state to sallow confirmation form
+     */
     handleCodeVerification(event) {
         event.preventDefault();
         this.api.validateSecretCode(this.state.userId, this.state.email, this.state.secretCode).then((response) => {
-            console.log("response--")
-            console.log(response)
             if(response.success) {
                 this.setState({currentStep: STEPS.ALLOW_CONFIRMATION});
                 this.notificationsHandler.updateUserData(this.state.userId, this.state.email, this.state.secretCode);
                 this.notificationsHandler.requestPermission().then((response) => {
-                    console.log("response--")
-                    console.log(response)
                     this.setState({permissionGranted: true, message: ''});
                 }).catch((error) => {
-                    console.log("error--")
-                    console.log(error)
+                    console.log("error", error);
                     this.setState({permissionGranted: false, currentStep: STEPS.BLOCK_CONFIRMATION, message: ''});
                 });
             } else {
                 this.setState({message: response.message, secretCode: '', limitExceed: response.limitExceed});
             }
         }).catch((error) => {
-            console.log("error--")
-            console.log(error)
+            console.log("error", error);
             this.setState({message: error.message});
         });
     }
 
+    /* 
+     * it handles the response from server for update token.
+     */
     handleTokenSentToServer(response, error) {
-        console.log("handleTokenSentToServer response")
-        console.log(response)
         if(response && response.success && response.alreadySent) {
             this.setState({currentStep: STEPS.ALREADY_SUBSCRIBED});
         } else if(response && response.success && !response.alreadySent) {
@@ -141,7 +169,9 @@ export default class RegisterPopup extends Component {
         }
     }
 
-
+    /* 
+     * First form to show user name and email inout fields 
+     */
     authenticationForm() {
         return (
              <div>
@@ -163,6 +193,9 @@ export default class RegisterPopup extends Component {
         );
     }
 
+    /* 
+     * Second form to show secret code inout fields 
+     */
     secretPinVerificationForm() {
         return (
              <div>
@@ -182,6 +215,9 @@ export default class RegisterPopup extends Component {
         );
     }
 
+    /* 
+     * Third form to ask user to allow notification permission
+     */
     allowConfirmationForm() {
         return (
             <div>
@@ -195,7 +231,9 @@ export default class RegisterPopup extends Component {
         );
     }
 
-
+    /* 
+     * Fourth form to ask notification permission denied message.
+     */
     blockConfirmationForm() {
         return (
             <div>
@@ -209,6 +247,10 @@ export default class RegisterPopup extends Component {
         );
     }
 
+
+    /* 
+     * Fifth form to show completion message.
+     */
     completionForm() {
         return (
             <div>
@@ -222,6 +264,9 @@ export default class RegisterPopup extends Component {
         );
     }
 
+    /* 
+     * Fifth form to show completion message.
+     */
     alreadySubscribedForm() {
         return (
             <div>
@@ -235,10 +280,17 @@ export default class RegisterPopup extends Component {
         );
     }
 
+    /* 
+     * Handler for showing notification when current window is active
+     */
     handleIncomingNotification(message) {
         return toast(message.notification.body);
     }
 
+
+    /* 
+     * Render the form based on value of currentStep.
+     */
     render() {
         let currentForm;
         switch(this.state.currentStep) {

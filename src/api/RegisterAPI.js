@@ -1,7 +1,14 @@
 import request from 'ajax-request';
 
-
+/* 
+ * Class to call registration API of bot.
+ *
+ */
 export default class RegisterAPI {
+    
+    /* 
+     * It calls the /slackbot/authenticate API and return the promise.
+     */
     authenticate(userId, email) {
         return new Promise((resolve, reject) => {
             request({
@@ -13,7 +20,6 @@ export default class RegisterAPI {
                 }
             }, function(error, res, body) {
                 const response = JSON.parse(body);
-                console.log(body);
                 if (error) {
                     reject(error);
                 } else {
@@ -23,7 +29,9 @@ export default class RegisterAPI {
         });
     }
 
-
+    /* 
+     * It calls the /slackbot/validate-secret-code API and return the promise.
+     */
     validateSecretCode(userId, email, secretCode) {
         return new Promise((resolve, reject) => {
             request({
@@ -45,7 +53,9 @@ export default class RegisterAPI {
         });
     }
 
-
+    /* 
+     * It calls the /slackbot/register-token API and return the promise.
+     */
     sendTokenToServer(userId, email, secretCode, token) {
         return new Promise((resolve, reject) => {
             request({
